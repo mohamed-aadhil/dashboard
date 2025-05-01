@@ -29,10 +29,10 @@ export class AppComponent implements AfterViewInit {
     // Simulated delay
     await new Promise(resolve => setTimeout(resolve, 2000));
 
-    const { ChartComponent } = await import('../Components/chart/chart.component');
+    const { ChartComponent } = await import('../Components/booking-trend-chart/booking-trend.component');
     this.viewContainerRef.createComponent(ChartComponent);
 
-    const { PieChartComponent } = await import('../Components/pie-chart/pie-chart.component');
+    const { PieChartComponent } = await import('../Components/booking-channel-chart/booking-channel.component');
     this.viewContainerRef.createComponent(PieChartComponent);
 
     this.loading = false;
