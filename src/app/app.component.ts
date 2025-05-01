@@ -1,16 +1,40 @@
-import { Component } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ViewContainerRef,
+  inject,
+} from '@angular/core';
+
 import { HeaderComponent } from '../Components/header/header.component';
-import { ChartComponent } from '../Components/chart/chart.component';
-import { PieChartComponent } from '../Components/pie-chart/pie-chart.component';
+import { LoadingSpinnerComponent } from '../Components/loading-spinner/loading-spinner.component';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [HeaderComponent, ChartComponent, PieChartComponent],
-  template: `
-    <app-header></app-header>
-    <app-chart></app-chart>
-    <app-pie-chart></app-pie-chart>
-  `
+  imports: [
+    CommonModule,
+    HeaderComponent,
+    LoadingSpinnerComponent, // 👈 required for <app-loading-spinner>
+  ],
+  templateUrl: './app.component.html', // 👈 using external template now
+  styleUrls: ['./app.component.css']
 })
-export class AppComponent {}
+export class AppComponent implements AfterViewInit {
+  private viewContainerRef = inject(ViewContainerRef);
+
+  loading = true;
+
+  async ngAfterViewInit() {
+    // Simulated delay
+    await new Promise(resolve => setTimeout(resolve, 2000));
+
+    const { ChartComponent } = await import('../Components/chart/chart.component');
+    this.viewContainerRef.createComponent(ChartComponent);
+
+    const { PieChartComponent } = await import('../Components/pie-chart/pie-chart.component');
+    this.viewContainerRef.createComponent(PieChartComponent);
+
+    this.loading = false;
+  }
+}
