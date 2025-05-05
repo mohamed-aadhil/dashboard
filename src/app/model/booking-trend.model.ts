@@ -1,5 +1,4 @@
-export interface SalesData {
-    category: string;
-    value: number;
-  }
-  
+export interface BookingTrend {
+  month: string;
+  bookings: number;
+}

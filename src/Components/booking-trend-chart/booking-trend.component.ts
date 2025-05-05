@@ -1,55 +1,78 @@
-import { Component, AfterViewInit } from '@angular/core';
+import { Component, AfterViewInit, inject } from '@angular/core';
 import * as echarts from 'echarts';
-import { SalesData } from '../../app/model/data.model';
+import { BookingTrend } from '../../app/model/booking-trend.model';
+import { BookingDataService } from '../../app/services/booking-data.service';
+import { YearSelectionService } from '../../app/services/year-selection.service';
 
 @Component({
-  selector: 'app-chart',
+  selector: 'app-booking-trend',
   standalone: true,
-  templateUrl: './chart.component.html',
-  styleUrls: ['./chart.component.css']
+  templateUrl: './booking-trend.component.html',
+  styleUrls: ['./booking-trend.component.css']
 })
-export class ChartComponent implements AfterViewInit {
-  chartData: SalesData[] = [
-    { category: 'Laptops', value: 120 },
-    { category: 'Phones', value: 90 },
-    { category: 'Tablets', value: 60 },
-    { category: 'Monitors', value: 50 },
-    { category: 'Accessories', value: 30 }
-  ];
+export class BookingTrendComponent implements AfterViewInit {
+  private bookingService = inject(BookingDataService);
+  private yearService = inject(YearSelectionService);
+  chartData: BookingTrend[] = [];
+  selectedYear: number = 2024;
 
   ngAfterViewInit(): void {
+    // Listen for year changes from shared service
+    this.yearService.selectedYear$.subscribe({
+      next: year => {
+        this.selectedYear = year;
+        console.log('Received year:', year);
+        this.fetchAndRenderChart(year);
+      }
+    });
+  }
+
+  private fetchAndRenderChart(year: number): void {
+    this.bookingService.getMonthlyBookings(year).subscribe({
+      next: data => {
+        this.chartData = data ?? [];
+        this.renderChart();
+      },
+      error: err => {
+        console.error('Error fetching booking data:', err);
+        this.chartData = [];
+      }
+    });
+  }
+
+  private renderChart(): void {
     const chartDom = document.getElementById('barChart');
-    if (chartDom) {
-      const myChart = echarts.init(chartDom);
+    if (!chartDom) return;
 
-      const option: echarts.EChartsOption = {
-        title: {
-          text: 'Top 5 Product Sales',
-          left: 'center'
-        },
-        tooltip: {
-          trigger: 'axis'
-        },
-        xAxis: {
-          type: 'category',
-          data: this.chartData.map(item => item.category)
-        },
-        yAxis: {
-          type: 'value'
-        },
-        series: [
-          {
-            name: 'Sales',
-            type: 'bar',
-            data: this.chartData.map(item => item.value),
-            itemStyle: {
-              color: '#5470C6'
-            }
+    const chart = echarts.init(chartDom);
+    const option: echarts.EChartsOption = {
+      title: {
+        text: `Monthly Booking Trend – ${this.selectedYear}`,
+        left: 'center'
+      },
+      tooltip: {
+        trigger: 'axis'
+      },
+      xAxis: {
+        type: 'category',
+        data: this.chartData.map(item => item.month)
+      },
+      yAxis: {
+        type: 'value'
+      },
+      series: [
+        {
+          name: 'Bookings',
+          type: 'line',
+          smooth: true,
+          data: this.chartData.map(item => item.bookings),
+          itemStyle: {
+            color: '#73C0DE'
           }
-        ]
-      };
+        }
+      ]
+    };
 
-      myChart.setOption(option);
-    }
+    chart.setOption(option);
   }
 }

@@ -1,57 +1,68 @@
-import { AfterViewInit, Component } from '@angular/core';
+import { Component, AfterViewInit, inject } from '@angular/core';
 import * as echarts from 'echarts';
+import { BookingDataService } from '../../app/services/booking-data.service';
+import { YearSelectionService } from '../../app/services/year-selection.service';
+import { BookingChannel } from '../../app/model/booking-channel.model';
 
 @Component({
-  selector: 'app-pie-chart',
+  selector: 'app-booking-channel',
   standalone: true,
-  templateUrl: './pie-chart.component.html',
-  styleUrls: ['./pie-chart.component.css']
+  templateUrl: './booking-channel.component.html',
+  styleUrls: ['./booking-channel.component.css']
 })
-export class PieChartComponent implements AfterViewInit {
-
-  pieData = [
-    { value: 1048, name: 'Electronics' },
-    { value: 735, name: 'Clothing' },
-    { value: 580, name: 'Furniture' },
-    { value: 484, name: 'Books' },
-    { value: 300, name: 'Others' }
-  ];
+export class BookingChannelComponent implements AfterViewInit {
+  private dataService = inject(BookingDataService);
+  private yearService = inject(YearSelectionService);
+  chartInstance!: echarts.ECharts;
 
   ngAfterViewInit(): void {
-    const chartDom = document.getElementById('pieChart');
-    if (chartDom) {
-      const myChart = echarts.init(chartDom);
+    const dom = document.getElementById('pieChart');
+    if (dom) {
+      this.chartInstance = echarts.init(dom);
 
-      const option: echarts.EChartsOption = {
-        title: {
-          text: 'Sales by Category',
-          left: 'center'
-        },
-        tooltip: {
-          trigger: 'item'
-        },
-        legend: {
-          orient: 'vertical',
-          left: 'left'
-        },
-        series: [
-          {
-            name: 'Sales',
-            type: 'pie',
-            radius: '50%',
-            data: this.pieData,
-            emphasis: {
-              itemStyle: {
-                shadowBlur: 10,
-                shadowOffsetX: 0,
-                shadowColor: 'rgba(0, 0, 0, 0.5)'
+      this.yearService.selectedYear$.subscribe(year => {
+        this.fetchAndRender(year);
+      });
+    }
+  }
+
+  private fetchAndRender(year: number): void {
+    this.dataService.getBookingsByChannel(year).subscribe({
+      next: data => {
+        const option: echarts.EChartsOption = {
+          title: {
+            text: `Booking Channel Share - ${year}`,
+            left: 'center'
+          },
+          tooltip: {
+            trigger: 'item'
+          },
+          legend: {
+            bottom: 10,
+            left: 'center'
+          },
+          series: [
+            {
+              type: 'pie',
+              radius: '60%',
+              data: data.map(d => ({
+                name: d.channel,
+                value: d.bookings
+              })),
+              emphasis: {
+                itemStyle: {
+                  shadowBlur: 10,
+                  shadowOffsetX: 0,
+                  shadowColor: 'rgba(0, 0, 0, 0.5)'
+                }
               }
             }
-          }
-        ]
-      };
+          ]
+        };
 
-      myChart.setOption(option);
-    }
+        this.chartInstance.setOption(option);
+      },
+      error: err => console.error('Failed to fetch booking channels:', err)
+    });
   }
 }

@@ -1,0 +1,4 @@
+<label for="year">Select Year:</label>
+<select id="year" [(ngModel)]="selectedYear" (change)="onYearChange($event)">
+  <option *ngFor="let year of years" [value]="year">{{ year }}</option>
+</select>

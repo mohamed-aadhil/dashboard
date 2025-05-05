@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { BookingChannelComponent } from './booking-channel.component';
+import { YearSelectorComponent } from './year-selector.component';
 
-describe('BookingChannelComponent', () => {
-  let component: BookingChannelComponent;
-  let fixture: ComponentFixture<BookingChannelComponent>;
+describe('YearSelectorComponent', () => {
+  let component: YearSelectorComponent;
+  let fixture: ComponentFixture<YearSelectorComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [BookingChannelComponent]
+      imports: [YearSelectorComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(BookingChannelComponent);
+    fixture = TestBed.createComponent(YearSelectorComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

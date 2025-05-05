@@ -1,5 +1,10 @@
 <app-header></app-header>
 
-<app-loading-spinner *ngIf="loading"></app-loading-spinner>
+<div style="padding: 1rem 2rem;">
+  <app-year-selector></app-year-selector>
+</div>
 
-<ng-container #lazyContainer></ng-container>
+<div class="chart-grid">
+  <app-booking-trend></app-booking-trend>
+  <app-booking-channel></app-booking-channel>
+</div>
