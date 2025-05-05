@@ -16,15 +16,21 @@ export class BookingTrendComponent implements AfterViewInit {
   chartData: BookingTrend[] = [];
   selectedYear: number = 2024;
 
+  chartType: 'line' | 'bar' = 'line';
+
   ngAfterViewInit(): void {
     // Listen for year changes from shared service
     this.yearService.selectedYear$.subscribe({
       next: year => {
         this.selectedYear = year;
-        console.log('Received year:', year);
         this.fetchAndRenderChart(year);
       }
     });
+  }
+
+  onChartTypeChange(type: 'line' | 'bar') {
+    this.chartType = type;
+    this.renderChart();
   }
 
   private fetchAndRenderChart(year: number): void {
@@ -43,6 +49,8 @@ export class BookingTrendComponent implements AfterViewInit {
   private renderChart(): void {
     const chartDom = document.getElementById('barChart');
     if (!chartDom) return;
+
+    echarts.dispose(chartDom); 
 
     const chart = echarts.init(chartDom);
     const option: echarts.EChartsOption = {
@@ -63,8 +71,8 @@ export class BookingTrendComponent implements AfterViewInit {
       series: [
         {
           name: 'Bookings',
-          type: 'line',
-          smooth: true,
+          type: this.chartType,
+          smooth: this.chartType === 'line',
           data: this.chartData.map(item => item.bookings),
           itemStyle: {
             color: '#73C0DE'
