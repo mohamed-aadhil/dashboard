@@ -1,5 +1,5 @@
 export interface BookingHaul {
-    haulType: 'Short-Haul' | 'Medium-Haul' | 'Long-Haul' | 'Ultra-Long-Haul';
+    haulType: string;
     bookings: number;
   }
   

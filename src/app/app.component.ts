@@ -4,6 +4,7 @@ import { HeaderComponent } from '../Components/header/header.component';
 import { YearSelectorComponent } from '../Components/year-selector/year-selector.component';
 import { BookingTrendComponent } from '../Components/booking-trend-chart/booking-trend.component';
 import { BookingChannelComponent } from '../Components/booking-channel-chart/booking-channel.component';
+import { BookingHaulComponent } from '../Components/booking-haul-chart/booking-haul.component';
 
 @Component({
   selector: 'app-root',
@@ -13,7 +14,8 @@ import { BookingChannelComponent } from '../Components/booking-channel-chart/boo
     HeaderComponent,
     YearSelectorComponent,
     BookingTrendComponent,
-    BookingChannelComponent
+    BookingChannelComponent,
+    BookingHaulComponent
   ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']

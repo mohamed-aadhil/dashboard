@@ -13,25 +13,41 @@ import { BookingChannel } from '../../app/model/booking-channel.model';
 export class BookingChannelComponent implements AfterViewInit {
   private dataService = inject(BookingDataService);
   private yearService = inject(YearSelectionService);
-  chartInstance!: echarts.ECharts;
+  
+  chartData: BookingChannel[] = [];
+  selectedYear: number = 2024;
 
   ngAfterViewInit(): void {
-    const dom = document.getElementById('pieChart');
-    if (dom) {
-      this.chartInstance = echarts.init(dom);
-
-      this.yearService.selectedYear$.subscribe(year => {
-        this.fetchAndRender(year);
-      });
-    }
+    // Listen for year changes from shared service
+    this.yearService.selectedYear$.subscribe({
+      next: year => {
+        this.selectedYear = year;
+        this.fetchAndRenderChart(year);
+      }
+    });
   }
 
-  private fetchAndRender(year: number): void {
+  private fetchAndRenderChart(year: number): void {
     this.dataService.getBookingsByChannel(year).subscribe({
       next: data => {
+        this.chartData = data ?? [];
+        this.renderChart();
+      },
+      error: err => {
+        console.error('Error fetching booking data:', err);
+        this.chartData = [];
+      }
+    });
+  }
+
+  private renderChart(): void {
+      const chartDom = document.getElementById('pieChart');
+      if (!chartDom) return;
+  
+      const chart = echarts.init(chartDom);
         const option: echarts.EChartsOption = {
           title: {
-            text: `Booking Channel Share - ${year}`,
+            text: `Booking Channel Share - ${this.selectedYear}`,
             left: 'center'
           },
           tooltip: {
@@ -45,7 +61,7 @@ export class BookingChannelComponent implements AfterViewInit {
             {
               type: 'pie',
               radius: '60%',
-              data: data.map(d => ({
+              data: this.chartData.map(d => ({
                 name: d.channel,
                 value: d.bookings
               })),
@@ -59,10 +75,7 @@ export class BookingChannelComponent implements AfterViewInit {
             }
           ]
         };
-
-        this.chartInstance.setOption(option);
-      },
-      error: err => console.error('Failed to fetch booking channels:', err)
-    });
-  }
-}
+        chart.setOption(option);
+      }
+    }
+        

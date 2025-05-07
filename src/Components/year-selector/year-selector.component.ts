@@ -11,7 +11,7 @@ import { YearSelectionService } from '../../app/services/year-selection.service'
 })
 export class YearSelectorComponent {
   private yearService = inject(YearSelectionService);
-  years = [2022, 2023, 2024];
+  years = [2023, 2024];
   selectedYear = 2024;
 
   onYearChange(event: Event): void {
