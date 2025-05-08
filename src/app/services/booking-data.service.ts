@@ -10,15 +10,15 @@ export class BookingDataService {
   constructor(private http: HttpClient) {}
 
   getMonthlyBookings(year: number): Observable<BookingTrend[]> {
-    return this.http.get<BookingTrend[]>(`http://localhost:5008/api/booking/counts?year=${year}`);
+    return this.http.get<BookingTrend[]>(`http://localhost/api/booking/counts?year=${year}`);
   }
 
   getBookingsByChannel(year: number): Observable<BookingChannel[]> {
-    return this.http.get<BookingChannel[]>(`http://localhost:5008/api/booking/channel?year=${year}`);
+    return this.http.get<BookingChannel[]>(`http://localhost/api/booking/channel?year=${year}`);
   }
   
   getHaulBookings(year: number): Observable<BookingHaul[]> {
-    return this.http.get<BookingHaul[]>(`http://localhost:5008/api/booking/haul?year=${year}`);
+    return this.http.get<BookingHaul[]>(`http://localhost/api/booking/haul?year=${year}`);
   }
   
 }
